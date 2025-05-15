@@ -81,8 +81,5 @@
     "ts-jest": "^28.0.8",
     "typescript": "^4.4.4"
   },
-  "homepage": "https://github.com/pmndrs/tunnel-rat#readme",
-  "dependencies": {
-    "zustand": "^4.3.2"
-  }
+  "homepage": "https://github.com/pmndrs/tunnel-rat#readme"
 }

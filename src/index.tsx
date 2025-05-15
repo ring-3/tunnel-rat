@@ -1,56 +1,72 @@
-import React, { ReactNode } from 'react'
-import { create, StoreApi } from 'zustand'
+import React, { useSyncExternalStore } from 'react'
 import { useIsomorphicLayoutEffect } from './utils'
 
 type Props = { children: React.ReactNode }
 
-type State = {
-  current: Array<React.ReactNode>
-  version: number
-  set: StoreApi<State>['setState']
-}
-
 export default function tunnel() {
-  const useStore = create<State>((set) => ({
-    current: new Array<ReactNode>(),
-    version: 0,
-    set,
-  }))
+  let rats: Array<React.ReactNode> = []
+  const ratNotifiers: Array<() => void> = []
+  function subscribeToRatChanges(onRatsChange: () => void) {
+    ratNotifiers.push(onRatsChange)
+    return () => {
+      ratNotifiers.splice(ratNotifiers.indexOf(onRatsChange), 1)
+    }
+  }
+  function getRats() {
+    return rats
+  }
+  function setRats(newRats: Array<React.ReactNode>) {
+    rats = newRats
+    for (const notify of ratNotifiers) {
+      notify()
+    }
+  }
+
+  let version = 0
+  const versionNotifiers: Array<() => void> = []
+  function subscribeToVersionChanges(onVersionChange: () => void) {
+    versionNotifiers.push(onVersionChange)
+    return () => {
+      versionNotifiers.splice(versionNotifiers.indexOf(onVersionChange), 1)
+    }
+  }
+  function getVersion() {
+    return version
+  }
+  function setVersion(newVersion: number) {
+    version = newVersion
+    for (const notify of versionNotifiers) {
+      notify()
+    }
+  }
 
   return {
     In: ({ children }: Props) => {
-      const set = useStore((state) => state.set)
-      const version = useStore((state) => state.version)
+      const currentVersion = useSyncExternalStore(subscribeToVersionChanges, getVersion)
 
-      /* When this component mounts, we increase the store's version number.
+      /* When this component mounts, we increase the version number.
       This will cause all existing rats to re-render (just like if the Out component
-      were mapping items to a list.) The re-rendering will cause the final 
+      were mapping items to a list.) The re-rendering will cause the final
       order of rendered components to match what the user is expecting. */
       useIsomorphicLayoutEffect(() => {
-        set((state) => ({
-          version: state.version + 1,
-        }))
+        setVersion(version + 1)
       }, [])
 
-      /* Any time the children _or_ the store's version number change, insert
+      /* Any time the children _or_ the version number change, insert
       the specified React children into the list of rats. */
       useIsomorphicLayoutEffect(() => {
-        set(({ current }) => ({
-          current: [...current, children],
-        }))
-
-        return () =>
-          set(({ current }) => ({
-            current: current.filter((c) => c !== children),
-          }))
-      }, [children, version])
+        setRats([...rats, children])
+        return () => {
+          setRats(rats.filter((child) => child !== children))
+        }
+      }, [children, currentVersion])
 
       return null
     },
 
     Out: () => {
-      const current = useStore((state) => state.current)
-      return <>{current}</>
+      const children = useSyncExternalStore(subscribeToRatChanges, getRats)
+      return <>{children}</>
     },
   }
 }

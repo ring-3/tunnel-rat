@@ -1,5 +1,9 @@
 # tunnel-rat
 
+## 0.2.0
+
+- Remove Zustand
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,12 +1,13 @@
 {
-  "name": "tunnel-rat",
-  "version": "0.1.2",
+  "name": "@ring-3/tunnel-rat",
+  "version": "0.2.0",
   "description": "non gratum anus rodentum",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
+    "prebuild": "yarn install",
     "build": "rollup -c",
     "postbuild": "tsc --emitDeclarationOnly",
     "prepublishOnly": "npm run build",
@@ -26,17 +27,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pmndrs/tunnel-rat.git"
+    "url": "git+https://github.com/ring-3/tunnel-rat.git"
   },
   "keywords": [
     "react",
     "portal",
     "tunnel"
   ],
-  "author": "Paul Henschel",
+  "author": "Icy <185012025+ic4l4s9c@users.noreply.github.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pmndrs/tunnel-rat/issues"
+    "url": "https://github.com/ring-3/tunnel-rat/issues"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
@@ -84,5 +85,6 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
-  "homepage": "https://github.com/pmndrs/tunnel-rat#readme"
+  "homepage": "https://github.com/ring-3/tunnel-rat#readme",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
